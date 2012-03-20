@@ -678,7 +678,7 @@ elseif ( strcmpi( MusicFileExt, '.mp3') )
                                     fread( fid, ImageSize );
                                 end
                             end
-                        elseif ( FrameSize > 300 )
+                        elseif ( FrameSize > 300  )
                             % It's likely we're past any useful frame data, so
                             % quit
                             NotDone = 0;    % not really needed because of the break, but...
