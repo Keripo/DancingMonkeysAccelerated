@@ -1,6 +1,6 @@
 % Arguments
-input_file	= '..\..\input\smooooch.mp3';
-output_dir	= '..\..\output';
+input_file	= '..\input\smooooch.mp3';
+output_dir	= '..\output';
 diff_easy	= '5';
 diff_medium	= '7';
 diff_hard	= '9';
