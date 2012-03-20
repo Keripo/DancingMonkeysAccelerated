@@ -194,7 +194,7 @@ disp('usage: DancingMonkeys [options] <infile> [basic medium hard [outdirectory]
 disp(' ');
 disp('    <infile> is an MP3 or WAV file, a directory, or an M3U playlist.');
 disp('    [basic medium hard] are values from 1 to 9 for step difficulty.');
-disp('    [outdirectory] is the results directory. This is .\..\..\output by default.');
+disp('    [outdirectory] is the results directory. This is .\..\output by default.');
 disp('    [options] can actually be placed anywhere in the command line.');
 disp(' ');
 disp('Recommended usage: DancingMonkeys -es 3 infile');
@@ -307,7 +307,7 @@ if ( InputCount == 0 )
     disp(' ');
     disp('    <infile> is an MP3 or WAV file, a directory, or an M3U playlist.');
     disp('    [basic medium hard] are values from 1 to 9 for step difficulty.');
-    disp('    [outdirectory] is the results directory. This is .\..\..\output by default.');
+    disp('    [outdirectory] is the results directory. This is .\..\output by default.');
     disp('    [options] can actually be placed anywhere in the command line.');
     disp(' ');
     disp('Recommended usage: DancingMonkeys -es 3 infile');
@@ -355,8 +355,7 @@ ChosenDifficultyRatings = [ EasyDifficulty, MedDifficulty, HardDifficulty ];
 ExeDirectory = pwd;
 
 if ( InputCount < 5 )
-%    RootOutputDirectory = fullfile( ExeDirectory, '..\..\Output\');
-    RootOutputDirectory = fullfile( ExeDirectory, '..\..\output\');
+    RootOutputDirectory = fullfile( ExeDirectory, '..\output\');
 end
 
 % make log file's directory so log file writes out properly.
@@ -370,13 +369,11 @@ if ( ~ exist( RootOutputDirectory, 'dir' ) )
     end
 end
 
-
-%LameFullFilename = [ ExeDirectory '\..\..\LAME\Lame.exe'];    
-LameFullFilename = [ ExeDirectory '\..\..\lame\lame.exe'];    
+    
+LameFullFilename = [ ExeDirectory '\..\lame\lame.exe'];    
 [ LamePath, LameFilename , LameFileExt ] = fileparts( LameFullFilename );
 
-%TempWavFile = fullfile( ExeDirectory, '\..\..\Temp Music\Temp Song.wav' );        
-TempWavFile = fullfile( ExeDirectory, '\..\..\tmp\tmp.wav' );        
+TempWavFile = fullfile( ExeDirectory, '\..\tmp\tmp.wav' );        
 [ TempWavFileDirectory, Temp, Temp ] = fileparts( TempWavFile );
 
 % check temp wav file's directory exists.
