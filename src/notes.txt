@@ -1,0 +1,12 @@
+line 55 to 301 read input
+
+321 to 440 config
+
+499 to 886 convert from mp3 to wav
+
+main working loops:
+line 1194
+line 1317
+line 1647
+
+The rest seems not important 
