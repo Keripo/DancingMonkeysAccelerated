@@ -1,0 +1,103 @@
+timeXXX = tic;
+displog( ImportantMsg, LFN, sprintf( '>>> timeXXX \t= %f', toc(timeXXX) ) );
+
+timeProgram {
+	timeArgs();
+	timeSong {
+		timePre {
+			timeInfo();
+			timeData();
+			timePeaks();
+		}
+		timeBpm {
+			timeTestAll {
+				timeTestI(); *
+			}
+			timeTestTop();
+			timeFitAll {
+				timeFitI(); *
+			}
+			timeFitBest();
+		}
+		timeGap {
+			timeEnergy();
+			timeSimilar();
+		}
+		timeGenerate {
+			timeCliques();
+			timePause();
+			timeArrow {
+				timeArrowI(); *
+			}
+			timeOutput();
+		}
+	}
+}
+
+Example:
+>>> timeArgs	= 0.055407
+>>> timeInfo	= 7.351531
+>>> timeData	= 1.766422
+>>> timePeaks	= 0.252237
+>>> timePrep	= timeInfo + timeData + timePeaks = 9.383203
+>>> timeTestI	= 14.065568
+>>> timeTestI	= 13.665818
+>>> timeTestI	= 12.972379
+>>> timeTestI	= 12.601868
+>>> timeTestI	= 12.377536
+>>> timeTestI	= 12.221224
+>>> timeTestI	= 11.848347
+>>> timeTestI	= 11.763947
+>>> timeTestI	= 11.540688
+>>> timeTestI	= 11.483081
+>>> timeTestAll	= SUM(timeTestI) = 124.572321
+>>> timeTestTop	= 0.002907
+>>> timeFitI	= 33.150172
+>>> timeFitI	= 20.373922
+>>> timeFitI	= 0.003454
+>>> timeFitI	= 1.468599
+>>> timeFitI	= 2.318523
+>>> timeFitI	= 0.003445
+>>> timeFitI	= 0.003343
+>>> timeFitI	= 0.003363
+>>> timeFitI	= 0.003406
+>>> timeFitAll	= SUM(testFitI) = 59.486068
+>>> timeFitBest	= 0.008029
+>>> timeTestI	= 0.215030
+>>> timeTestI	= 0.111519
+>>> timeTestI	= 0.113815
+>>> timeTestI	= 0.112210
+>>> timeTestI	= 0.109969
+>>> timeTestI	= 0.112355
+>>> timeTestI	= 0.110398
+>>> timeTestI	= 0.109599
+>>> timeTestI	= 0.107396
+>>> timeTestI	= 0.100470
+>>> timeTest	= SUM(timeTestI) = 1.230229
+>>> timeTestTop	= 0.000068
+>>> timeFitI	= 0.000110
+>>> timeFitI	= 0.000117
+>>> timeFitI	= 0.000269
+>>> timeFitI	= 0.000105
+>>> timeFitI	= 0.000110
+>>> timeFitI	= 0.000119
+>>> timeFitI	= 0.000122
+>>> timeFitI	= 0.000138
+>>> timeFitI	= 0.000137
+>>> timeFitI	= 0.000016
+>>> timeFitAll	= SUM(testFitI) = 0.024054
+>>> timeFitBest	= 0.000959
+>>> timeBpm		= timeTestAll + timeTestTop + timeFitAll + timeFitBest = 185.354798
+>>> timeEnergy	= 0.032143
+>>> timeSimilar	= 1.501359
+>>> timeGap		= timeEnergy + timeSmilar = 1.538579
+>>> timeCliques	= 0.018584
+>>> timePause	= 0.509238
+>>> timeArrowI	= 0.128239
+>>> timeArrowI	= 0.097463
+>>> timeArrowI	= 0.097423
+>>> timeArrow	= 0.335661
+>>> timeOutput	= 3.517808
+>>> timeGenerate	= timeCliques + timePause + timeArrow + timeOutput = 4.391961
+>>> timeSong	= timePre + timeBpm + timeGap + timeGenerate = 200.680973
+>timeProgram	= timeSong + timeArgs = 200.748907
