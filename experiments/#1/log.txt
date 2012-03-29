@@ -1,0 +1,9 @@
+Goal:Try to move first loop to GPU
+Result:
+1,Timing for each single process become unaccessible since everything become paralled.
+2,The total time shows greater than default CPU method
+
+Some guess:
+1, Maybe I used too many global vars that slowed GPU down
+2, Maybe the data set is too small
+3, Maybe Matlab already optimized its default loop
