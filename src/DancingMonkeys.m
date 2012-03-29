@@ -1216,8 +1216,9 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
 	timeTestI = tic;
     
     data1 = (MinimumInterval : IntervalFrequency : MaximumInterval);
+    gdata1 = gpuArray(data1);
     gpu_function = @gputest;
-    arrayfun(gpu_function,data1);
+    arrayfun(gpu_function,gdata1);
     
 %     for i = MinimumInterval : IntervalFrequency : MaximumInterval
 %         curDone = 100 * (i-MinimumInterval) / checkIntervalRange;

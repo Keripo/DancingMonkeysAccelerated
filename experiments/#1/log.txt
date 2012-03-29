@@ -7,3 +7,12 @@ Some guess:
 1, Maybe I used too many global vars that slowed GPU down
 2, Maybe the data set is too small
 3, Maybe Matlab already optimized its default loop
+
+
+
+
+
+########################################################
+After some more tests, the experiment is confirmed falled.
+Actually, it is paralled on CPU.
+Matlab GPU side doesn't support Global vars.
