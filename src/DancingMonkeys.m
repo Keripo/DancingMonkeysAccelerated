@@ -3,12 +3,13 @@
 %   modified by Eric Haines, version 1.02 on, 2006
 
 function DancingMonkeys( varargin )
+
 % Difficulty levels must be given as strings and not integers
 
 % Remove warnings for things such as existing directories or clipped
 % waveforms
 warning off
-tic;
+timeProgram = tic;
 
 VersionNumber = '1.06';
 
@@ -52,6 +53,7 @@ CommandTestOnly = 0;                    % 1 = test, do nothing else.
 InputCount = 0;
 SkipArg = 0;
 
+timeArgs = tic;
 for i = 1 : nargin
     if ( SkipArg )
         % we cannot actually increment "i" inside this loop, so have to do
@@ -194,7 +196,7 @@ disp('usage: DancingMonkeys [options] <infile> [basic medium hard [outdirectory]
 disp(' ');
 disp('    <infile> is an MP3 or WAV file, a directory, or an M3U playlist.');
 disp('    [basic medium hard] are values from 1 to 9 for step difficulty.');
-disp('    [outdirectory] is the results directory. This is .\..\..\output by default.');
+disp('    [outdirectory] is the results directory. This is .\..\output by default.');
 disp('    [options] can actually be placed anywhere in the command line.');
 disp(' ');
 disp('Recommended usage: DancingMonkeys -es 3 infile');
@@ -307,7 +309,7 @@ if ( InputCount == 0 )
     disp(' ');
     disp('    <infile> is an MP3 or WAV file, a directory, or an M3U playlist.');
     disp('    [basic medium hard] are values from 1 to 9 for step difficulty.');
-    disp('    [outdirectory] is the results directory. This is .\..\..\output by default.');
+    disp('    [outdirectory] is the results directory. This is .\..\output by default.');
     disp('    [options] can actually be placed anywhere in the command line.');
     disp(' ');
     disp('Recommended usage: DancingMonkeys -es 3 infile');
@@ -318,7 +320,7 @@ end
 
 
 % Split music filename into parts
-[ InputDirectory , MusicFileName , MusicFileExt , Temp ] = Fileparts( MusicFullFilename );
+[ InputDirectory , MusicFileName , MusicFileExt ] = fileparts( MusicFullFilename );
 
 % Randomly generate difficulty levels if they are not given
 if ( InputCount < 2 )
@@ -355,7 +357,7 @@ ChosenDifficultyRatings = [ EasyDifficulty, MedDifficulty, HardDifficulty ];
 ExeDirectory = pwd;
 
 if ( InputCount < 5 )
-    RootOutputDirectory = fullfile( ExeDirectory, '..\..\Output\');
+    RootOutputDirectory = fullfile( ExeDirectory, '..\output\');
 end
 
 % make log file's directory so log file writes out properly.
@@ -369,12 +371,12 @@ if ( ~ exist( RootOutputDirectory, 'dir' ) )
     end
 end
 
+    
+LameFullFilename = [ ExeDirectory '\..\lame\lame.exe'];    
+[ LamePath, LameFilename , LameFileExt ] = fileparts( LameFullFilename );
 
-LameFullFilename = [ ExeDirectory '\..\..\LAME\Lame.exe'];    
-[ LamePath, LameFilename , LameFileExt , Temp ] = Fileparts( LameFullFilename );
-
-TempWavFile = fullfile( ExeDirectory, '\..\..\Temp Music\Temp Song.wav' );        
-[ TempWavFileDirectory, Temp, Temp, Temp ] = Fileparts( TempWavFile );
+TempWavFile = fullfile( ExeDirectory, '\..\tmp\tmp.wav' );        
+[ TempWavFileDirectory, Temp, Temp ] = fileparts( TempWavFile );
 
 % check temp wav file's directory exists.
 if ( ~ exist( TempWavFileDirectory, 'dir' ) )
@@ -494,9 +496,13 @@ elseif ( strcmpi( MusicFileExt, '.m3u') )
 else
     error( 'ERROR: unknown input file extension "%s". Please convert to MP3 or WAV.', MusicFileExt );    
 end
+displog( ImportantMsg, LFN, sprintf( '>>> timeArgs\t= %f', toc(timeArgs) ) );
 
 % The major loop through music files
 for SongNumber = 1 : SongCount
+timeSong = tic;
+timePrep = tic;
+timeInfo = tic;
     ErrorFound = 0;
     MusicFullFilename = InputFileList(SongNumber).name;
     if ( CommandTestOnly )
@@ -504,7 +510,7 @@ for SongNumber = 1 : SongCount
         continue;
     end
     
-[ Temp , MusicFileName , MusicFileExt , Temp ] = Fileparts( MusicFullFilename );
+[ Temp , MusicFileName , MusicFileExt ] = fileparts( MusicFullFilename );
 % delete trailing ' ' at end of file name, as these cause problems.
 while ( strcmp(MusicFileName(end:end),' ') )
     MusicFileName = MusicFileName(1:end-1);    
@@ -678,7 +684,7 @@ elseif ( strcmpi( MusicFileExt, '.mp3') )
                                     fread( fid, ImageSize );
                                 end
                             end
-                        elseif ( FrameSize > 300 )
+                        elseif ( FrameSize > 300  )
                             % It's likely we're past any useful frame data, so
                             % quit
                             NotDone = 0;    % not really needed because of the break, but...
@@ -885,6 +891,8 @@ else
     continue;
 end
 
+displog( ImportantMsg, LFN, sprintf( '>>> timeInfo\t= %f', toc(timeInfo) ) );
+timeData = tic;
 
 % If we want to find BPM the fast way, we need to check the WavReadFile for
 % its BPM. (Note, might want to write out SongData below and check that instead?)
@@ -1036,6 +1044,9 @@ Limit = SortedData( round( (SongLength/100) * PeakThreshold ) );
 
 clear SortedData;
 
+displog( ImportantMsg, LFN, sprintf( '>>> timeData\t= %f', toc(timeData) ) );
+timePeaks = tic;
+
 % Set any element below the limit value to 0.
 PeakData = NormalisedSmoothData;
 PeakData( find( PeakData < Limit ) ) = 0;
@@ -1136,6 +1147,9 @@ NumBeats = size( Beats,1 ) * 2;
 % value. This involves testing each possible interval between beats and
 % rating them by the amount of data that supports them being the correct
 % BPM.
+displog( ImportantMsg, LFN, sprintf( '>>> timePeaks\t= %f', toc(timePeaks) ) );
+displog( ImportantMsg, LFN, sprintf( '>>> timePrep\t= timeInfo + timeData + timePeaks = %f', toc(timePrep) ) );
+timeBpm = tic;
 
 % for now, always run the normal and refined BPM test, unless shortcut by the quick test:
 %TestQuickBPM = RunQuickBPM;
@@ -1152,7 +1166,8 @@ Confidence = 0;
 BPMfailure = 1;  % means ultimate failure
 % TestQuickBPM ~= 0 ||
 while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )   
-    % We want to run up to three times:
+    timeTestAll = tic;
+	% We want to run up to three times:
     % Quick BPM, fair resolution
     % Normal method, slow low resolution
     % Refine, high resolution
@@ -1191,11 +1206,17 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
     % The costliest part ahead...
     doneIncrement = 10; % just for display that something is happening
     doneLevel = doneIncrement;  % just for display
+	timeTestI = tic;
+    
+    
     for i = MinimumInterval : IntervalFrequency : MaximumInterval
         curDone = 100 * (i-MinimumInterval) / checkIntervalRange;
         if ( curDone > doneLevel )
             displog( ProgressMsg, LFN, sprintf( '  BPM testing: %3.0f%% done, BPM %f', curDone, ( Frequency / i ) * 60 ) );
             doneLevel = doneLevel + doneIncrement;
+			displog( ImportantMsg, LFN, sprintf( '>>> timeTestI\t= %f', toc(timeTestI) ) );
+			timeTestI = tic;
+			
         end
         %     displog( ProgressMsg, LFN, sprintf( 'Started %d', i ) );
 
@@ -1289,9 +1310,12 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
 
         IntervalFitness( (i + 1) - MinimumInterval ) = max( GapsConfidence );
         IntervalGap( (i+1) - MinimumInterval )       = GapPeaks( 1 );
-
     end
+	displog( ImportantMsg, LFN, sprintf( '>>> timeTestI\t= %f', toc(timeTestI) ) );
 
+	displog( ImportantMsg, LFN, sprintf( '>>> timeTestAll\t= SUM(timeTestI) = %f', toc(timeTestAll) ) );
+	timeTestTop = tic;
+	
     % Find the top 50 possible BPMs that look interesting and compute the
     % fitness of every interval around them
     Temp = sort( IntervalFitness );
@@ -1310,15 +1334,21 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
             IntervalFitness( LookAt + 1 : LookAt + IntervalFrequency - 1 ) = -1;
         end
     end
+	
+	displog( ImportantMsg, LFN, sprintf( '>>> timeTestTop\t= %f', toc(timeTestTop) ) );
+	timeFitAll = tic;
 
     displog( ProgressMsg, LFN, 'Check fitness of BPMs.' );
     doneIncrement = 10;
     doneLevel = doneIncrement;
+	timeFitI = tic;
     for i = MinimumInterval : MaximumInterval
         curDone = 100 * (i-MinimumInterval) / checkIntervalRange;
         if ( curDone > doneLevel )
             displog( ProgressMsg, LFN, sprintf( '  Fitness testing: %3.0f%% done', curDone ));
             doneLevel = doneLevel + doneIncrement;
+			displog( ImportantMsg, LFN, sprintf( '>>> timeFitI\t= %f', toc(timeFitI) ) );
+			timeFitI = tic;
         end
         if ( IntervalFitness( (i + 1) - MinimumInterval ) == -1 )
 
@@ -1409,7 +1439,11 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
 
         end
     end
-    displog( ProgressMsg, LFN, 'Brute forced the interval tests.' );
+	displog( ImportantMsg, LFN, sprintf( '>>> timeFitI\t= %f', toc(timeFitI) ) );
+	displog( ImportantMsg, LFN, sprintf( '>>> timeFitAll\t= SUM(testFitI) = %f', toc(timeFitAll) ) );
+	timeFitBest = tic;
+	
+	displog( ProgressMsg, LFN, 'Brute forced the interval tests.' );
 
     % Fit a polynomial to the fitness value in order to normalise the results
     % to remove bias towards high BPMs
@@ -1477,7 +1511,7 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
             TestRefinedBPM = 0;
         end
     end
-
+	displog( ImportantMsg, LFN, sprintf( '>>> timeFitBest\t= %f', toc(timeFitBest) ) );
 % end of loop to test BPM
 end
 
@@ -1485,6 +1519,10 @@ end
 if ( BPMfailure == 1 )
     continue;
 end
+
+displog( ImportantMsg, LFN, sprintf( '>>> timeBpm\t= timeTestAll + timeTestTop + timeFitAll + timeFitBest = %f', toc(timeBpm) ) );
+timeGap = tic;
+timeEnergy = tic;
 
 % Calculate the energy of each beat. It is simply the sum of the squared
 % values of each sample in the waveform.
@@ -1524,6 +1562,8 @@ if ( mean( Energy( 2:2:end ) ) > mean( Energy( 1:2:end ) ) + 0.001 )
     
 end
 
+displog( ImportantMsg, LFN, sprintf( '>>> timeEnergy\t= %f', toc(timeEnergy) ) );
+timeSimilar = tic;
 
 % Now compute a matrix of the similarity of each half beat to every other
 % half beat.
@@ -1606,11 +1646,16 @@ displog( ImportantMsg, LFN, sprintf( 'Calculated BPM: %f', BPM ) );
 displog( ImportantMsg, LFN, sprintf( '           Gap in seconds: %f', GapInSeconds ) );
 displog( ImportantMsg, LFN, sprintf( '           Confidence: %f (minimum is %f)', Confidence, MinConfidence) );
 
+displog( ImportantMsg, LFN, sprintf( '>>> timeSimilar\t= %f', toc(timeSimilar) ) );
+displog( ImportantMsg, LFN, sprintf( '>>> timeGap\t= timeEnergy + timeSmilar = %f', toc(timeGap) ) );
+
 % if computing BPM and gap only, skip the rest (output, etc.)
 if ( CommandBPMonly == 1 )
     continue;
 end
 
+timeGenerate = tic;
+timeCliques = tic;
 
 % Now we want to use the self-similarity matrix of bars to compute a linear
 % grouping of the music. First we find all the maximal cliques of similar
@@ -1692,6 +1737,8 @@ for ct1 = 1 : size( SimilarSections, 1 )
 end
 displog( ProgressMsg, LFN, 'Divided song into groups.' );
 
+displog( ImportantMsg, LFN, sprintf( '>>> timeCliques\t= %f', toc(timeCliques) ) );
+timePause = tic;
 
 % Extract pauses from the music. Simply find bars which are very quiet.
 PauseThreshold = 150;
@@ -1766,6 +1813,9 @@ for ct1 = 1 : size( Freezes, 1 )
 end
 displog( ProgressMsg, LFN, 'Found freeze arrow positions.' );
 
+displog( ImportantMsg, LFN, sprintf( '>>> timePause\t= %f', toc(timePause) ) );
+timeArrow = tic;
+
 
 % Here the patterns of arrows are created.
 
@@ -1808,6 +1858,7 @@ FootRatings = [];
 
 % For each of the three difficulty levels we will produce arrows for.
 for ArrowSet = 1 : 3
+	timeArrowI = tic;
     UserDifficultyRating = ChosenDifficultyRatings( ArrowSet );
     
     OffbeatModifier = DifficultyOffbeatModifier( UserDifficultyRating );
@@ -2151,13 +2202,16 @@ for ArrowSet = 1 : 3
     
     FootRatings( ArrowSet ) = FootRating;
     ArrowTracks( :, :, ArrowSet ) = ArrowTrack;
-    
+	displog( ImportantMsg, LFN, sprintf( '>>> timeArrowI\t= %f', toc(timeArrowI) ) );
 end
 clear BarSimilarity;
+displog( ImportantMsg, LFN, sprintf( '>>> timeArrow\t= %f', toc(timeArrow) ) );
 
 if ( ErrorFound )
     continue;
 end
+
+timeOutput = tic;
 
 displog( ProgressMsg, LFN, 'Created arrow patterns for each difficulty level.' );
 
@@ -2458,6 +2512,9 @@ displog( ProgressMsg, LFN, sprintf('  BPM: %g', BPM) );
 displog( ProgressMsg, LFN, sprintf('  Gap: %g', GapInSeconds) );
 displog( ProgressMsg, LFN, sprintf('  Confidence: %g', Confidence) );
 
+displog( ImportantMsg, LFN, sprintf( '>>> timeOutput\t= %f', toc(timeOutput) ) );
+displog( ImportantMsg, LFN, sprintf( '>>> timeGenerate\t= timeCliques + timePause + timeArrow + timeOutput = %f', toc(timeGenerate) ) );
+displog( ImportantMsg, LFN, sprintf( '>>> timeSong\t= timePrep + timeBpm + timeGap + timeGenerate = %f', toc(timeSong) ) );
 end % end of for loop for a single song
 
 if ( CommandLog > 0 )
@@ -2466,4 +2523,4 @@ if ( CommandLog > 0 )
     displog( NonvitalMsg, LFN, sprintf( 'End Time: %d:%02d:%02d %d/%02d/%d (U.S. format)', ClockTime(4), ClockTime(5), floor(ClockTime(6)), ClockTime(2), ClockTime(3), ClockTime(1) ));
 end   
 
-toc;
+displog( ImportantMsg, LFN, sprintf( '\t>>> timeProgram\t= timeSong + timeArgs = %f', toc(timeProgram) ) );
