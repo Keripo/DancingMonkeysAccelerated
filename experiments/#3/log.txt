@@ -1,0 +1,6 @@
+Goal: Data transporting experiment.
+See how much performance will decrease when data is tranformed to a GPUArray and gather back after calculation
+
+
+Result:
+It costs much!
