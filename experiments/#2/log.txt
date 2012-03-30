@@ -1,0 +1,10 @@
+Goal:Try to parrall the first loop
+Result:
+The entire big loop cannot be paralled due to some vars used in it.
+2 sub-loops are parralled successfully.
+Performance slightly increased
+
+
+########################################################
+It is still on CPU.
+But performance increased anyway.
