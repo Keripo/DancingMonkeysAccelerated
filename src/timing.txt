@@ -1,103 +1,101 @@
 timeXXX = tic;
 displog( ImportantMsg, LFN, sprintf( '>>> timeXXX \t= %f', toc(timeXXX) ) );
 
-timeProgram {
-	timeArgs();
-	timeSong {
-		timePre {
-			timeInfo();
-			timeData();
-			timePeaks();
-		}
-		timeBpm {
-			timeTestAll {
-				timeTestI(); *
-			}
-			timeTestTop();
-			timeFitAll {
-				timeFitI(); *
-			}
-			timeFitBest();
-		}
-		timeGap {
-			timeEnergy();
-			timeSimilar();
-		}
-		timeGenerate {
-			timeCliques();
-			timePause();
-			timeArrow {
-				timeArrowI(); *
-			}
-			timeOutput();
-		}
-	}
-}
+timeProgram
+	timeArgs
+	timeSong
+		timePrep
+			timeInfo
+			timeData
+			timePeaks
+		timeBpm
+			timeTest
+			timeTestTop
+			timeFit
+			timeFitBest
+		timeGap
+			timeEnergy
+			timeSimilar
+		timeGenerate
+			timeCliques
+			timePause
+			timeArrow
+			timeOutput
 
 Example:
->>> timeArgs	= 0.055407
->>> timeInfo	= 7.351531
->>> timeData	= 1.766422
->>> timePeaks	= 0.252237
->>> timePrep	= timeInfo + timeData + timePeaks = 9.383203
->>> timeTestI	= 14.065568
->>> timeTestI	= 13.665818
->>> timeTestI	= 12.972379
->>> timeTestI	= 12.601868
->>> timeTestI	= 12.377536
->>> timeTestI	= 12.221224
->>> timeTestI	= 11.848347
->>> timeTestI	= 11.763947
->>> timeTestI	= 11.540688
->>> timeTestI	= 11.483081
->>> timeTestAll	= SUM(timeTestI) = 124.572321
->>> timeTestTop	= 0.002907
->>> timeFitI	= 33.150172
->>> timeFitI	= 20.373922
->>> timeFitI	= 0.003454
->>> timeFitI	= 1.468599
->>> timeFitI	= 2.318523
->>> timeFitI	= 0.003445
->>> timeFitI	= 0.003343
->>> timeFitI	= 0.003363
->>> timeFitI	= 0.003406
->>> timeFitAll	= SUM(testFitI) = 59.486068
->>> timeFitBest	= 0.008029
->>> timeTestI	= 0.215030
->>> timeTestI	= 0.111519
->>> timeTestI	= 0.113815
->>> timeTestI	= 0.112210
->>> timeTestI	= 0.109969
->>> timeTestI	= 0.112355
->>> timeTestI	= 0.110398
->>> timeTestI	= 0.109599
->>> timeTestI	= 0.107396
->>> timeTestI	= 0.100470
->>> timeTest	= SUM(timeTestI) = 1.230229
->>> timeTestTop	= 0.000068
->>> timeFitI	= 0.000110
->>> timeFitI	= 0.000117
->>> timeFitI	= 0.000269
->>> timeFitI	= 0.000105
->>> timeFitI	= 0.000110
->>> timeFitI	= 0.000119
->>> timeFitI	= 0.000122
->>> timeFitI	= 0.000138
->>> timeFitI	= 0.000137
->>> timeFitI	= 0.000016
->>> timeFitAll	= SUM(testFitI) = 0.024054
->>> timeFitBest	= 0.000959
->>> timeBpm		= timeTestAll + timeTestTop + timeFitAll + timeFitBest = 185.354798
->>> timeEnergy	= 0.032143
->>> timeSimilar	= 1.501359
->>> timeGap		= timeEnergy + timeSmilar = 1.538579
->>> timeCliques	= 0.018584
->>> timePause	= 0.509238
->>> timeArrowI	= 0.128239
->>> timeArrowI	= 0.097463
->>> timeArrowI	= 0.097423
->>> timeArrow	= 0.335661
->>> timeOutput	= 3.517808
->>> timeGenerate	= timeCliques + timePause + timeArrow + timeOutput = 4.391961
->>> timeSong	= timePre + timeBpm + timeGap + timeGenerate = 200.680973
->timeProgram	= timeSong + timeArgs = 200.748907
+
+>> test_full
+===============================================================================
+Start Time: 22:51:34 3/31/2012 (U.S. format)
+Initialized.
+>>> timeArgs = 0.049165
+----------------------------------------------------------------
+Begin processing input file ..\input\smooooch.mp3
+MP3 Title found: smooooch・∀・
+MP3 Primary Artist found: kors k
+>>> timeInfo = 7.359065
+Song file successfully read.
+Normalized song.
+Monoed song.
+Smoothed song.
+Normalised mono and smoothed data.
+>>> timeData = 1.632235
+Thresholded data.
+Found peaks and troughs.
+Found beat positions.
+Calculated peak to beat offset.
+>>> timePeaks = 0.255412
+>>> timePrep = 9.259185 (timeInfo + timeData + timePeaks)
+Normal BPM test: 89.000000 to 205.000000
+>>> timeTest = 127.874894
+>>> timeTestTop = 0.002512
+Check fitness of BPMs.
+>>> timeFit = 59.420099
+Brute forced the interval tests.
+>>> timeFitBest = 0.007939
+>>> timeBpm = 187.322939 (timeTest + timeTestTop + timeFit + timeFitBest)
+Refined BPM test: best previous was 177.001806, searching 176.942624 to 177.061028
+>>> timeTest = 1.207865
+>>> timeTestTop = 0.000066
+Check fitness of BPMs.
+>>> timeFit = 0.000348
+Brute forced the interval tests.
+>>> timeFitBest = 0.000979
+>>> timeBpm = 1.218310 (timeTest + timeTestTop + timeFit + timeFitBest)
+Calculated Energy.
+>>> timeEnergy = 0.031773
+Computed Self Similarity.
+Calculated Bar Similarity.
+Calculated BPM: 176.942624
+           Gap in seconds: 0.602245
+           Confidence: 34.095395 (minimum is 10.000000)
+>>> timeSimilar = 1.620944
+>>> timeGap = 1.657744 (timeEnergy + timeSmilar)
+Divided song into groups.
+>>> timeCliques = 0.036221
+Found pauses.
+Found freeze arrow positions.
+>>> timePause = 0.366295
+Foot Rating: 5
+Foot Rating: 7
+Foot Rating: 9
+>>> timeArrow = 0.333497
+Created arrow patterns for each difficulty level.
+Created output song directory ..\output\smooooch.
+Converted output song to MP3.
+Outputted normalized song.
+Output directory: ..\output\smooooch\
+Created .dwi step file.
+WARNING: This set of steps is probably poor, as there are 8 stops.
+Created .sm step file.
+Results: 
+  Song file name: smooooch
+  BPM: 176.943
+  Gap: 0.602245
+  Confidence: 34.0954
+>>> timeOutput = 3.516483
+>>> timeGenerate = 4.262458 (timeCliques + timePause + timeArrow + timeOutput)
+>>> timeSong = 203.738119 (timePrep + timeBpm + timeGap + timeGenerate)
+End Time: 22:54:58 3/31/2012 (U.S. format)
+>>> timeProgram = 203.798838 (timeSong + timeArgs)
+>> 
