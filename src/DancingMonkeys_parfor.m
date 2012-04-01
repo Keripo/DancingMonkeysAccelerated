@@ -1171,7 +1171,7 @@ BPMfailure = 1;  % means ultimate failure
 while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 ) 
     timeBpm = tic;
     timeTest = tic;
-	% We want to run up to three times:
+    % We want to run up to three times:
     % Quick BPM, fair resolution
     % Normal method, slow low resolution
     % Refine, high resolution
@@ -1211,16 +1211,16 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
     %doneIncrement = 10; % just for display that something is happening
     %doneLevel = doneIncrement;  % just for display    
     
-	kMax = length(find(MinimumInterval : IntervalFrequency : MaximumInterval));
+    kMax = length(find(MinimumInterval : IntervalFrequency : MaximumInterval));
     IntervalFitnessP = zeros( [ kMax 1 ] );
     IntervalGapP     = zeros( [ kMax 1 ] );
     parfor k = 1:kMax
     %for i = MinimumInterval : IntervalFrequency : MaximumInterval
-		i = (k - 1) * IntervalFrequency + MinimumInterval;
+        i = (k - 1) * IntervalFrequency + MinimumInterval;
         %curDone = 100 * (i-MinimumInterval) / checkIntervalRange;
         %if ( curDone > doneLevel )
         %    displog( ProgressMsg, LFN, sprintf( '  BPM testing: %3.0f%% done, BPM %f', curDone, ( Frequency / i ) * 60 ) );
-        %    doneLevel = doneLevel + doneIncrement;			
+        %    doneLevel = doneLevel + doneIncrement;            
         %end
         %     displog( ProgressMsg, LFN, sprintf( 'Started %d', i ) );
 
@@ -1314,21 +1314,21 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
 
         %IntervalFitness( (i + 1) - MinimumInterval ) = max( GapsConfidence );
         %IntervalGap( (i+1) - MinimumInterval )       = GapPeaks( 1 );
-		IntervalFitnessP(k) = max(GapsConfidence);
-		IntervalGapP(k) = GapPeaks(1);
+        IntervalFitnessP(k) = max(GapsConfidence);
+        IntervalGapP(k) = GapPeaks(1);
     end
-	displog( ImportantMsg, LFN, sprintf( '>>> timeTest = %f', toc(timeTest) ) );
-	
-	% Copy data from parallel-safe matrix to actual matrix
+    displog( ImportantMsg, LFN, sprintf( '>>> timeTest = %f', toc(timeTest) ) );
+    
+    % Copy data from parallel-safe matrix to actual matrix
     timeTestCopy = tic;
-	for k = 1:kMax
+    for k = 1:kMax
         i = (k - 1) * IntervalFrequency + 1;
         IntervalFitness(i) = IntervalFitnessP(k);
         IntervalGap(i) = IntervalGapP(k);
     end
-	
-	timeTestTop = tic;
-	
+    
+    timeTestTop = tic;
+    
     % Find the top 50 possible BPMs that look interesting and compute the
     % fitness of every interval around them
     Temp = sort( IntervalFitness );
@@ -1347,9 +1347,9 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
             IntervalFitness( LookAt + 1 : LookAt + IntervalFrequency - 1 ) = -1;
         end
     end
-	
-	displog( ImportantMsg, LFN, sprintf( '>>> timeTestTop = %f', toc(timeTestTop) ) );
-	timeFit = tic;
+    
+    displog( ImportantMsg, LFN, sprintf( '>>> timeTestTop = %f', toc(timeTestTop) ) );
+    timeFit = tic;
 
     displog( ProgressMsg, LFN, 'Check fitness of BPMs.' );
     %doneIncrement = 10;
@@ -1456,10 +1456,10 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
 
         end
     end
-	displog( ImportantMsg, LFN, sprintf( '>>> timeFit = %f', toc(timeFit) ) );
-	timeFitBest = tic;
-	
-	displog( ProgressMsg, LFN, 'Brute forced the interval tests.' );
+    displog( ImportantMsg, LFN, sprintf( '>>> timeFit = %f', toc(timeFit) ) );
+    timeFitBest = tic;
+    
+    displog( ProgressMsg, LFN, 'Brute forced the interval tests.' );
 
     % Fit a polynomial to the fitness value in order to normalise the results
     % to remove bias towards high BPMs
@@ -1527,7 +1527,7 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
             TestRefinedBPM = 0;
         end
     end
-	displog( ImportantMsg, LFN, sprintf( '>>> timeFitBest = %f', toc(timeFitBest) ) );
+    displog( ImportantMsg, LFN, sprintf( '>>> timeFitBest = %f', toc(timeFitBest) ) );
     displog( ImportantMsg, LFN, sprintf( '>>> timeBpm = %f (timeTest + timeTestTop + timeFit + timeFitBest)', toc(timeBpm) ) );
 % end of loop to test BPM
 end
