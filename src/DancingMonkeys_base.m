@@ -5,9 +5,6 @@
 
 function DancingMonkeys( varargin )
 
-% Init pool for parallel computing
-matlabpool open;
-
 % Difficulty levels must be given as strings and not integers
 
 % Remove warnings for things such as existing directories or clipped
@@ -1211,12 +1208,7 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
     %doneIncrement = 10; % just for display that something is happening
     %doneLevel = doneIncrement;  % just for display    
     
-	kMax = length(find(MinimumInterval : IntervalFrequency : MaximumInterval));
-    IntervalFitnessP = zeros( [ kMax 1 ] );
-    IntervalGapP     = zeros( [ kMax 1 ] );
-    parfor k = 1:kMax
-    %for i = MinimumInterval : IntervalFrequency : MaximumInterval
-		i = (k - 1) * IntervalFrequency + MinimumInterval;
+    for i = MinimumInterval : IntervalFrequency : MaximumInterval
         %curDone = 100 * (i-MinimumInterval) / checkIntervalRange;
         %if ( curDone > doneLevel )
         %    displog( ProgressMsg, LFN, sprintf( '  BPM testing: %3.0f%% done, BPM %f', curDone, ( Frequency / i ) * 60 ) );
@@ -1312,21 +1304,10 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
 
         GapPeaks = SortedGaps( find( GapsConfidence == max( GapsConfidence ) ) );
 
-        %IntervalFitness( (i + 1) - MinimumInterval ) = max( GapsConfidence );
-        %IntervalGap( (i+1) - MinimumInterval )       = GapPeaks( 1 );
-		IntervalFitnessP(k) = max(GapsConfidence);
-		IntervalGapP(k) = GapPeaks(1);
+        IntervalFitness( (i + 1) - MinimumInterval ) = max( GapsConfidence );
+        IntervalGap( (i+1) - MinimumInterval )       = GapPeaks( 1 );
     end
 	displog( ImportantMsg, LFN, sprintf( '>>> timeTest = %f', toc(timeTest) ) );
-	
-	% Copy data from parallel-safe matrix to actual matrix
-    timeTestCopy = tic;
-	for k = 1:kMax
-        i = (k - 1) * IntervalFrequency + 1;
-        IntervalFitness(i) = IntervalFitnessP(k);
-        IntervalGap(i) = IntervalGapP(k);
-    end
-	
 	timeTestTop = tic;
 	
     % Find the top 50 possible BPMs that look interesting and compute the
@@ -2531,6 +2512,3 @@ if ( CommandLog > 0 )
 end   
 
 displog( ImportantMsg, LFN, sprintf( '>>> timeProgram = %f (timeSong + timeArgs)', toc(timeProgram) ) );
-
-% Close parallel pool
-matlabpool close

@@ -1,0 +1,77 @@
+>> test_full
+Starting matlabpool using the 'local' configuration ... connected to 8 labs.
+===============================================================================
+Start Time: 0:32:33 4/01/2012 (U.S. format)
+Initialized.
+>>> timeArgs = 0.057897
+----------------------------------------------------------------
+Begin processing input file ..\input\smooooch.mp3
+MP3 Title found: smoooochãƒ»âˆ€ãƒ»
+MP3 Primary Artist found: kors k
+>>> timeInfo = 7.357806
+Song file successfully read.
+Normalized song.
+Monoed song.
+Smoothed song.
+Normalised mono and smoothed data.
+>>> timeData = 1.613414
+Thresholded data.
+Found peaks and troughs.
+Found beat positions.
+Calculated peak to beat offset.
+>>> timePeaks = 0.253834
+>>> timePrep = 9.243721 (timeInfo + timeData + timePeaks)
+Normal BPM test: 89.000000 to 205.000000
+>>> timeTest = 48.065255
+>>> timeTestTop = 0.002865
+Check fitness of BPMs.
+>>> timeFit = 59.736078
+Brute forced the interval tests.
+>>> timeFitBest = 0.006983
+>>> timeBpm = 107.834077 (timeTest + timeTestTop + timeFit + timeFitBest)
+Refined BPM test: best previous was 177.001806, searching 176.942624 to 177.061028
+>>> timeTest = 0.508210
+>>> timeTestTop = 0.000059
+Check fitness of BPMs.
+>>> timeFit = 0.000098
+Brute forced the interval tests.
+>>> timeFitBest = 0.000882
+>>> timeBpm = 0.519429 (timeTest + timeTestTop + timeFit + timeFitBest)
+Calculated Energy.
+>>> timeEnergy = 0.035548
+Computed Self Similarity.
+Calculated Bar Similarity.
+Calculated BPM: 176.942624
+           Gap in seconds: 0.602245
+           Confidence: 34.095395 (minimum is 10.000000)
+>>> timeSimilar = 1.528868
+>>> timeGap = 1.569647 (timeEnergy + timeSmilar)
+Divided song into groups.
+>>> timeCliques = 0.019439
+Found pauses.
+Found freeze arrow positions.
+>>> timePause = 1.115202
+Foot Rating: 5
+Foot Rating: 7
+Foot Rating: 9
+>>> timeArrow = 0.324308
+Created arrow patterns for each difficulty level.
+Created output song directory ..\output\smooooch.
+Converted output song to MP3.
+Outputted normalized song.
+Output directory: ..\output\smooooch\
+Created .dwi step file.
+WARNING: This set of steps is probably poor, as there are 8 stops.
+Created .sm step file.
+Results: 
+  Song file name: smooooch
+  BPM: 176.943
+  Gap: 0.602245
+  Confidence: 34.0954
+>>> timeOutput = 3.391086
+>>> timeGenerate = 4.862453 (timeCliques + timePause + timeArrow + timeOutput)
+>>> timeSong = 124.046391 (timePrep + timeBpm + timeGap + timeGenerate)
+End Time: 0:34:37 4/01/2012 (U.S. format)
+>>> timeProgram = 124.123120 (timeSong + timeArgs)
+Sending a stop signal to all the labs ... stopped.
+>> 
