@@ -1317,15 +1317,14 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
 		IntervalFitnessP(k) = max(GapsConfidence);
 		IntervalGapP(k) = GapPeaks(1);
     end
-	displog( ImportantMsg, LFN, sprintf( '>>> timeTest = %f', toc(timeTest) ) );
-	
-	% Copy data from parallel-safe matrix to actual matrix
-    timeTestCopy = tic;
+    
+    % Copy data from parallel-safe matrix to actual matrix
 	for k = 1:kMax
         i = (k - 1) * IntervalFrequency + 1;
         IntervalFitness(i) = IntervalFitnessP(k);
         IntervalGap(i) = IntervalGapP(k);
     end
+	displog( ImportantMsg, LFN, sprintf( '>>> timeTest = %f', toc(timeTest) ) );
 	
 	timeTestTop = tic;
 	
