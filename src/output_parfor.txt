@@ -1,60 +1,60 @@
 >> test_full
 Starting matlabpool using the 'local' configuration ... connected to 8 labs.
 ===============================================================================
-Start Time: 0:32:33 4/01/2012 (U.S. format)
+Start Time: 1:21:13 4/01/2012 (U.S. format)
 Initialized.
->>> timeArgs = 0.057897
+>>> timeArgs = 0.077549
 ----------------------------------------------------------------
 Begin processing input file ..\input\smooooch.mp3
 MP3 Title found: smoooochãƒ»âˆ€ãƒ»
 MP3 Primary Artist found: kors k
->>> timeInfo = 7.357806
+>>> timeInfo = 7.369134
 Song file successfully read.
 Normalized song.
 Monoed song.
 Smoothed song.
 Normalised mono and smoothed data.
->>> timeData = 1.613414
+>>> timeData = 1.648877
 Thresholded data.
 Found peaks and troughs.
 Found beat positions.
 Calculated peak to beat offset.
->>> timePeaks = 0.253834
->>> timePrep = 9.243721 (timeInfo + timeData + timePeaks)
+>>> timePeaks = 0.252488
+>>> timePrep = 9.285266 (timeInfo + timeData + timePeaks)
 Normal BPM test: 89.000000 to 205.000000
->>> timeTest = 48.065255
->>> timeTestTop = 0.002865
+>>> timeTest = 47.146878
+>>> timeTestTop = 0.001736
 Check fitness of BPMs.
->>> timeFit = 59.736078
+>>> timeFit = 30.256290
 Brute forced the interval tests.
->>> timeFitBest = 0.006983
->>> timeBpm = 107.834077 (timeTest + timeTestTop + timeFit + timeFitBest)
+>>> timeFitBest = 0.006814
+>>> timeBpm = 77.425841 (timeTest + timeTestTop + timeFit + timeFitBest)
 Refined BPM test: best previous was 177.001806, searching 176.942624 to 177.061028
->>> timeTest = 0.508210
->>> timeTestTop = 0.000059
+>>> timeTest = 0.469915
+>>> timeTestTop = 0.000080
 Check fitness of BPMs.
->>> timeFit = 0.000098
+>>> timeFit = 0.047145
 Brute forced the interval tests.
->>> timeFitBest = 0.000882
->>> timeBpm = 0.519429 (timeTest + timeTestTop + timeFit + timeFitBest)
+>>> timeFitBest = 0.000884
+>>> timeBpm = 0.527563 (timeTest + timeTestTop + timeFit + timeFitBest)
 Calculated Energy.
->>> timeEnergy = 0.035548
+>>> timeEnergy = 0.035512
 Computed Self Similarity.
 Calculated Bar Similarity.
 Calculated BPM: 176.942624
            Gap in seconds: 0.602245
            Confidence: 34.095395 (minimum is 10.000000)
->>> timeSimilar = 1.528868
->>> timeGap = 1.569647 (timeEnergy + timeSmilar)
+>>> timeSimilar = 1.534986
+>>> timeGap = 1.575342 (timeEnergy + timeSmilar)
 Divided song into groups.
->>> timeCliques = 0.019439
+>>> timeCliques = 0.017208
 Found pauses.
 Found freeze arrow positions.
->>> timePause = 1.115202
+>>> timePause = 0.364133
 Foot Rating: 5
 Foot Rating: 7
 Foot Rating: 9
->>> timeArrow = 0.324308
+>>> timeArrow = 0.333774
 Created arrow patterns for each difficulty level.
 Created output song directory ..\output\smooooch.
 Converted output song to MP3.
@@ -68,10 +68,10 @@ Results:
   BPM: 176.943
   Gap: 0.602245
   Confidence: 34.0954
->>> timeOutput = 3.391086
->>> timeGenerate = 4.862453 (timeCliques + timePause + timeArrow + timeOutput)
->>> timeSong = 124.046391 (timePrep + timeBpm + timeGap + timeGenerate)
-End Time: 0:34:37 4/01/2012 (U.S. format)
->>> timeProgram = 124.123120 (timeSong + timeArgs)
+>>> timeOutput = 3.377460
+>>> timeGenerate = 4.105738 (timeCliques + timePause + timeArrow + timeOutput)
+>>> timeSong = 92.935734 (timePrep + timeBpm + timeGap + timeGenerate)
+End Time: 1:22:46 4/01/2012 (U.S. format)
+>>> timeProgram = 93.028754 (timeSong + timeArgs)
 Sending a stop signal to all the labs ... stopped.
 >> 

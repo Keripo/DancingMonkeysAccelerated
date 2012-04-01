@@ -1354,13 +1354,18 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
     displog( ProgressMsg, LFN, 'Check fitness of BPMs.' );
     %doneIncrement = 10;
     %doneLevel = doneIncrement;
-    for i = MinimumInterval : MaximumInterval
+    
+    %for i = MinimumInterval : MaximumInterval
+    kMax = length(MinimumInterval : MaximumInterval);
+    parfor k = 1:kMax
         %curDone = 100 * (i-MinimumInterval) / checkIntervalRange;
         %if ( curDone > doneLevel )
         %    displog( ProgressMsg, LFN, sprintf( '  Fitness testing: %3.0f%% done', curDone ));
         %    doneLevel = doneLevel + doneIncrement;
         %end
-        if ( IntervalFitness( (i + 1) - MinimumInterval ) == -1 )
+        %if ( IntervalFitness( (i + 1) - MinimumInterval ) == -1 )
+        if (IntervalFitness(k) == -1)
+            i = (k - 1) + MinimumInterval;
 
             Gaps = mod( Beats, i );
             ExtraGaps = Gaps + i;
@@ -1444,8 +1449,10 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
 
             GapPeaks = SortedGaps( find( GapsConfidence == max( GapsConfidence ) ) );
 
-            IntervalFitness( (i + 1) - MinimumInterval ) = max( GapsConfidence );
-            IntervalGap( (i+1) - MinimumInterval )       = GapPeaks( 1 );
+            %IntervalFitness( (i + 1) - MinimumInterval ) = max( GapsConfidence );
+            %IntervalGap( (i+1) - MinimumInterval )       = GapPeaks( 1 );
+            IntervalFitness(k) = max(GapsConfidence);
+            IntervalGap(k) = GapPeaks(1);
 
         end
     end
