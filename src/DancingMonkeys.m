@@ -1191,6 +1191,7 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
         displog( ImportantMsg, LFN, sprintf( 'Normal BPM test: %f to %f', MinimumBPM, MaximumBPM ) );
         MaximumInterval = round( Frequency / ( MinimumBPM / 60 ) );
         MinimumInterval = round( Frequency / ( MaximumBPM / 60 ) );
+        displog( ImportantMsg, LFN, sprintf( 'Interval from %f to %f: %f at %f', MinimumInterval, MaximumInterval, (MaximumInterval - MinimumInterval) / IntervalFrequency, Frequency ) );
     else
         % refined attempt
         RefinedInterval = round( Frequency / ( BPM / 60 ) );

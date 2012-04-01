@@ -1,0 +1,59 @@
+7a8,10
+> % Init pool for parallel computing
+> matlabpool open;
+> 
+1211c1214,1219
+<     for i = MinimumInterval : IntervalFrequency : MaximumInterval
+---
+> 	kMax = length(find(MinimumInterval : IntervalFrequency : MaximumInterval));
+>     IntervalFitnessP = zeros( [ kMax 1 ] );
+>     IntervalGapP     = zeros( [ kMax 1 ] );
+>     parfor k = 1:kMax
+>     %for i = MinimumInterval : IntervalFrequency : MaximumInterval
+> 		i = (k - 1) * IntervalFrequency + MinimumInterval;
+1307,1308c1315,1318
+<         IntervalFitness( (i + 1) - MinimumInterval ) = max( GapsConfidence );
+<         IntervalGap( (i+1) - MinimumInterval )       = GapPeaks( 1 );
+---
+>         %IntervalFitness( (i + 1) - MinimumInterval ) = max( GapsConfidence );
+>         %IntervalGap( (i+1) - MinimumInterval )       = GapPeaks( 1 );
+> 		IntervalFitnessP(k) = max(GapsConfidence);
+> 		IntervalGapP(k) = GapPeaks(1);
+1310a1321,1329
+> 	
+> 	% Copy data from parallel-safe matrix to actual matrix
+>     timeTestCopy = tic;
+> 	for k = 1:kMax
+>         i = (k - 1) * IntervalFrequency + 1;
+>         IntervalFitness(i) = IntervalFitnessP(k);
+>         IntervalGap(i) = IntervalGapP(k);
+>     end
+> 	
+1338c1357,1360
+<     for i = MinimumInterval : MaximumInterval
+---
+>     
+>     %for i = MinimumInterval : MaximumInterval
+>     kMax = length(MinimumInterval : MaximumInterval);
+>     parfor k = 1:kMax
+1344c1366,1368
+<         if ( IntervalFitness( (i + 1) - MinimumInterval ) == -1 )
+---
+>         %if ( IntervalFitness( (i + 1) - MinimumInterval ) == -1 )
+>         if (IntervalFitness(k) == -1)
+>             i = (k - 1) + MinimumInterval;
+1428,1429c1452,1455
+<             IntervalFitness( (i + 1) - MinimumInterval ) = max( GapsConfidence );
+<             IntervalGap( (i+1) - MinimumInterval )       = GapPeaks( 1 );
+---
+>             %IntervalFitness( (i + 1) - MinimumInterval ) = max( GapsConfidence );
+>             %IntervalGap( (i+1) - MinimumInterval )       = GapPeaks( 1 );
+>             IntervalFitness(k) = max(GapsConfidence);
+>             IntervalGap(k) = GapPeaks(1);
+2514c2540,2543
+< displog( ImportantMsg, LFN, sprintf( '>>> timeProgram = %f (timeSong + timeArgs)', toc(timeProgram) ) );
+---
+> displog( ImportantMsg, LFN, sprintf( '>>> timeProgram = %f (timeSong + timeArgs)', toc(timeProgram) ) );
+> 
+> % Close parallel pool
+> matlabpool close
