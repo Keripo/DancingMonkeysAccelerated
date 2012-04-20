@@ -1171,7 +1171,7 @@ BPMfailure = 1;  % means ultimate failure
 while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 ) 
     timeBpm = tic;
     timeTest = tic;
-	% We want to run up to three times:
+    % We want to run up to three times:
     % Quick BPM, fair resolution
     % Normal method, slow low resolution
     % Refine, high resolution
@@ -1191,7 +1191,6 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
         displog( ImportantMsg, LFN, sprintf( 'Normal BPM test: %f to %f', MinimumBPM, MaximumBPM ) );
         MaximumInterval = round( Frequency / ( MinimumBPM / 60 ) );
         MinimumInterval = round( Frequency / ( MaximumBPM / 60 ) );
-        displog( ImportantMsg, LFN, sprintf( 'Interval from %f to %f: %f at %f', MinimumInterval, MaximumInterval, (MaximumInterval - MinimumInterval) / IntervalFrequency, Frequency ) );
     else
         % refined attempt
         RefinedInterval = round( Frequency / ( BPM / 60 ) );
@@ -1212,16 +1211,21 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
     %doneIncrement = 10; % just for display that something is happening
     %doneLevel = doneIncrement;  % just for display    
     
-	kMax = length(find(MinimumInterval : IntervalFrequency : MaximumInterval));
-    IntervalFitnessP = zeros( [ kMax 1 ] );
-    IntervalGapP     = zeros( [ kMax 1 ] );
-    parfor k = 1:kMax
-    %for i = MinimumInterval : IntervalFrequency : MaximumInterval
-		i = (k - 1) * IntervalFrequency + MinimumInterval;
+    kMax = length(find(MinimumInterval : IntervalFrequency : MaximumInterval));
+    %IntervalFitnessP = zeros( [ kMax 1 ] );
+    %IntervalGapP     = zeros( [ kMax 1 ] );
+    IntervalFitnessP = gzeros( [ kMax 1 ] );
+    IntervalGapP     = gzeros( [ kMax 1 ] );
+    
+    gfor k = 1:kMax
+        gGapWindow = local(k,GapWindow);
+        gBeatStrengths = local(k,BeatStrengths);
+        %for i = MinimumInterval : IntervalFrequency : MaximumInterval
+        i = (k - 1) * IntervalFrequency + MinimumInterval;
         %curDone = 100 * (i-MinimumInterval) / checkIntervalRange;
         %if ( curDone > doneLevel )
         %    displog( ProgressMsg, LFN, sprintf( '  BPM testing: %3.0f%% done, BPM %f', curDone, ( Frequency / i ) * 60 ) );
-        %    doneLevel = doneLevel + doneIncrement;			
+        %    doneLevel = doneLevel + doneIncrement;            
         %end
         %     displog( ProgressMsg, LFN, sprintf( 'Started %d', i ) );
 
@@ -1238,7 +1242,7 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
         % hamming window, based on the strength of the beat predicting each
         % gap and the distance of the gap from the centre of the hamming
         % window.
-        GapsFiltered = zeros( NumBeats, 1 );
+        GapsFiltered = gzeros( NumBeats, 1 );
         for ct1 = 1 : NumBeats
             Area = 0;
 
@@ -1255,7 +1259,8 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
                 if ( xPos > size( Beats,1 ) ) 
                     xPos = xPos - size( Beats,1 );
                 end
-                Area = Area + ( BeatStrengths( xPos ) * GapWindow( PosVal - (Centre - HalfGapWindowSize) ) );
+                Area = Area + ( gBeatStrengths( xPos ) * gGapWindow( PosVal - (Centre - HalfGapWindowSize) ) );
+                %Area = Area + ( BeatStrengths( xPos ) * GapWindow( PosVal - (Centre - HalfGapWindowSize) ) );
                 Pos = Pos - 1;
                 PosVal = SortedGaps( Pos );
             end
@@ -1271,7 +1276,8 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
                 if ( xPos > size( Beats,1 ) ) 
                     xPos = xPos - size( Beats,1 );
                 end
-                Area = Area + ( BeatStrengths( xPos ) * GapWindow( PosVal - (Centre - HalfGapWindowSize) ) );
+                Area = Area + ( gBeatStrengths( xPos ) * gGapWindow( PosVal - (Centre - HalfGapWindowSize) ) );
+                %Area = Area + ( BeatStrengths( xPos ) * GapWindow( PosVal - (Centre - HalfGapWindowSize) ) );
                 Pos = Pos + 1;
                 PosVal = SortedGaps( Pos );
             end
@@ -1286,7 +1292,7 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
         % GapFiltered value from offbeats.
 
         % Need to take care of end cases better
-        GapsConfidence = zeros( NumBeats, 1 );
+        GapsConfidence = gzeros( NumBeats, 1 );
         for ct1 = 1 : NumBeats -1 
 
             OffbeatPos = SortedGaps( ct1 ) + round(i / 2);
@@ -1310,25 +1316,29 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
 
             GapsConfidence( ct1 ) = GapsFiltered( ct1 ) + ( OffBeatValue * 0.5 );        
         end
-
-        GapPeaks = SortedGaps( find( GapsConfidence == max( GapsConfidence ) ) );
-
-        %IntervalFitness( (i + 1) - MinimumInterval ) = max( GapsConfidence );
-        %IntervalGap( (i+1) - MinimumInterval )       = GapPeaks( 1 );
-		IntervalFitnessP(k) = max(GapsConfidence);
-		IntervalGapP(k) = GapPeaks(1);
-    end
+        mask = GapsConfidence == max( GapsConfidence );
+        GapPeaks = mask .* SortedGaps;
+       % GapPeaks = SortedGaps( find( GapsConfidence == max( GapsConfidence ) ) );
+        IntervalFitnessP(k) = max(GapsConfidence);
+        IntervalGapP(k) = GapPeaks(1);
+    gend
+    
+    %IntervalFitnessP = double(gIntervalFitnessP);
+    %IntervalGapP     = double( gIntervalGapP);
+    
+    
+    displog( ImportantMsg, LFN, sprintf( '>>> timeTest = %f', toc(timeTest) ) );
     
     % Copy data from parallel-safe matrix to actual matrix
-	for k = 1:kMax
+    timeTestCopy = tic;
+    for k = 1:kMax
         i = (k - 1) * IntervalFrequency + 1;
         IntervalFitness(i) = IntervalFitnessP(k);
         IntervalGap(i) = IntervalGapP(k);
     end
-	displog( ImportantMsg, LFN, sprintf( '>>> timeTest = %f', toc(timeTest) ) );
-	
-	timeTestTop = tic;
-	
+    
+    timeTestTop = tic;
+    
     % Find the top 50 possible BPMs that look interesting and compute the
     % fitness of every interval around them
     Temp = sort( IntervalFitness );
@@ -1347,9 +1357,9 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
             IntervalFitness( LookAt + 1 : LookAt + IntervalFrequency - 1 ) = -1;
         end
     end
-	
-	displog( ImportantMsg, LFN, sprintf( '>>> timeTestTop = %f', toc(timeTestTop) ) );
-	timeFit = tic;
+    
+    displog( ImportantMsg, LFN, sprintf( '>>> timeTestTop = %f', toc(timeTestTop) ) );
+    timeFit = tic;
 
     displog( ProgressMsg, LFN, 'Check fitness of BPMs.' );
     %doneIncrement = 10;
@@ -1449,17 +1459,19 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
 
             GapPeaks = SortedGaps( find( GapsConfidence == max( GapsConfidence ) ) );
 
-            %IntervalFitness( (i + 1) - MinimumInterval ) = max( GapsConfidence );
-            %IntervalGap( (i+1) - MinimumInterval )       = GapPeaks( 1 );
+          
             IntervalFitness(k) = max(GapsConfidence);
             IntervalGap(k) = GapPeaks(1);
 
         end
     end
-	displog( ImportantMsg, LFN, sprintf( '>>> timeFit = %f', toc(timeFit) ) );
-	timeFitBest = tic;
-	
-	displog( ProgressMsg, LFN, 'Brute forced the interval tests.' );
+    
+    
+    
+    displog( ImportantMsg, LFN, sprintf( '>>> timeFit = %f', toc(timeFit) ) );
+    timeFitBest = tic;
+    
+    displog( ProgressMsg, LFN, 'Brute forced the interval tests.' );
 
     % Fit a polynomial to the fitness value in order to normalise the results
     % to remove bias towards high BPMs
@@ -1527,7 +1539,7 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
             TestRefinedBPM = 0;
         end
     end
-	displog( ImportantMsg, LFN, sprintf( '>>> timeFitBest = %f', toc(timeFitBest) ) );
+    displog( ImportantMsg, LFN, sprintf( '>>> timeFitBest = %f', toc(timeFitBest) ) );
     displog( ImportantMsg, LFN, sprintf( '>>> timeBpm = %f (timeTest + timeTestTop + timeFit + timeFitBest)', toc(timeBpm) ) );
 % end of loop to test BPM
 end
@@ -1546,18 +1558,18 @@ Position = round( GapInSamples );
 WindowNum = 1;
 AbsoluteEnergy = [];
 % unused: Energy = [];
-while ( Position + Interval < SongLength )
+%while ( Position + Interval < SongLength )
     
-    Window = Mono( Position:(Position+round(Interval/2))-1 );
-    AbsoluteEnergy( WindowNum ) = sum( Window .^ 2 );
-    WindowNum = WindowNum + 1;
+ %   Window = Mono( Position:(Position+round(Interval/2))-1 );
+ %   AbsoluteEnergy( WindowNum ) = sum( Window .^ 2 );
+ %   WindowNum = WindowNum + 1;
     
-    Window = Mono( (Position+round(Interval/2)):(Position+Interval) );
-    AbsoluteEnergy( WindowNum ) = sum( Window .^ 2 );
-    WindowNum = WindowNum + 1;
+ %   Window = Mono( (Position+round(Interval/2)):(Position+Interval) );
+ %   AbsoluteEnergy( WindowNum ) = sum( Window .^ 2 );
+ %   WindowNum = WindowNum + 1;
     
-    Position = Position + Interval;
-end
+ %   Position = Position + Interval;
+%end
 
 clear Mono Window;
 
