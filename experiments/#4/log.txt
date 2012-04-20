@@ -1,0 +1,6 @@
+
+first good result from jecket.
+modified the first loop and get a correct result.
+but timing is not so good.
+
+
