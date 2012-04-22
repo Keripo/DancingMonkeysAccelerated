@@ -4,7 +4,6 @@
 %   modified by Philip Peng to include timing info, 2012
 
 function DancingMonkeys( varargin )
-
 % Difficulty levels must be given as strings and not integers
 
 % Remove warnings for things such as existing directories or clipped
@@ -1068,7 +1067,7 @@ Troughs = find(sign(-sign(diff(sign(diff( NormalisedSmoothData )))-0.5)-1))+1;
 displog( ProgressMsg, LFN, 'Found peaks and troughs.' );
 
 % Compute the normalised strengths of each beat from 0 to 1
-BeatStrengths = gpuArray(NormalisedSmoothData( Peaks ));
+BeatStrengths = NormalisedSmoothData( Peaks );
 BeatStrengths = BeatStrengths - min( BeatStrengths );
 BeatStrengths = BeatStrengths ./ max( BeatStrengths );
 
@@ -1136,7 +1135,7 @@ clear NormalisedMonoData Troughs;
 % Offset = median( Offsets );
 
 % Beats = Peaks - round( Offset );
-Beats = gpuArray(BeatPositions);
+Beats = BeatPositions;
 clear BeatPositions;
 displog( ProgressMsg, LFN, 'Calculated peak to beat offset.' );
 
@@ -1209,91 +1208,173 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
     %doneLevel = doneIncrement;  % just for display    
     
     kMax = length(find(MinimumInterval : IntervalFrequency : MaximumInterval));
-    %IntervalFitnessP = zeros( [ kMax 1 ] );
-    %IntervalGapP     = zeros( [ kMax 1 ] );
-    IntervalFitnessP   = parallel.gpu.GPUArray.zeros(kMax);
-    IntervalGapP       = parallel.gpu.GPUArray.zeros(kMax);
+    IntervalFitnessP = zeros( [ kMax 1 ] );
+    IntervalGapP     = zeros( [ kMax 1 ] );
     %parfor k = 1:kMax
-	for k = 1:kMax
+    for k = 1:kMax
     %for i = MinimumInterval : IntervalFrequency : MaximumInterval
-        timeLoop1 = tic;
-    
+        timeBeatsEtc_c = tic;
+		Beats_g = gpuArray(Beats);
+		BeatStrengths_g = gpuArray(BeatStrengths);
+		GapWindow_g = gpuArray(GapWindow);
+		HalfGapWindowSize_g = gpuArray(HalfGapWindowSize);
+		BeatsSize_g = gpuArray(size( Beats_g,1 ));
+		One_g = parallel.gpu.GPUArray.ones(1, 1, 'double');
+		disp(sprintf('timeBeatsEtc_c = %f', toc(timeBeatsEtc_c)))
+		
+		timeCalcI = tic;
         i = (k - 1) * IntervalFrequency + MinimumInterval;
-		
-        %curDone = 100 * (i-MinimumInterval) / checkIntervalRange;
-        %if ( curDone > doneLevel )
-        %    displog( ProgressMsg, LFN, sprintf( '  BPM testing: %3.0f%% done, BPM %f', curDone, ( Frequency / i ) * 60 ) );
-        %    doneLevel = doneLevel + doneIncrement;            
-        %end
-        %     displog( ProgressMsg, LFN, sprintf( 'Started %d', i ) );
-
-		%class(Beats)
-		
-        timeLoop1a = tic;
+        disp(sprintf('timeCalcI   = %f',toc(timeCalcI)))
         
+        timeCalcI_g = tic;
+        j = gpuArray(i);
+        disp(sprintf('timeCalcI_g = %f',toc(timeCalcI_g)))
+
+        timeGaps = tic;
         Gaps = mod( Beats, i );
-		
-		%class(Gaps)
-		
         ExtraGaps = Gaps + i;
+		disp(sprintf('timeGaps   = %f', toc(timeGaps)))
+		
+		timeGaps_g = tic;
+		Gaps_g = mod( Beats_g, j );
+        ExtraGaps_g = Gaps_g + j;
+		disp(sprintf('timeGaps_g = %f', toc(timeGaps_g)))
 
+		timeFullGaps = tic;
         FullGaps = [ Gaps ExtraGaps ]';
-		
-		%class(FullGaps)
-		
         FullGaps = FullGaps(:);
+		disp(sprintf('timeFullGaps   = %f', toc(timeFullGaps)))
 		
-		%class(FullGaps)
+		timeFullGaps_g = tic;
+        FullGaps_g = [ Gaps_g ExtraGaps_g ]';
+        FullGaps_g = FullGaps_g(:);
+		disp(sprintf('timeFullGaps_g = %f', toc(timeFullGaps_g)))
 		
+		timeSortFullGaps = tic;
         [ SortedGaps SortedIndex ] = sort( FullGaps );
-        
-        disp(sprintf('timeLoop1a = %f',toc(timeLoop1a)))
+		disp(sprintf('timeSortFullGaps   = %f', toc(timeSortFullGaps)))
 		
-		%class(SortedGaps)
-		
-		%class(SortedIndex)
+		timeSortFullGaps_g = tic;
+        [ SortedGaps_g SortedIndex_g ] = sort( FullGaps_g );
+		disp(sprintf('timeSortFullGaps_g = %f', toc(timeSortFullGaps_g)))
 
         % Here we take a hamming window over a small window of Gap positions
         % and record the amount of support we get from gap values within that
         % hamming window, based on the strength of the beat predicting each
         % gap and the distance of the gap from the centre of the hamming
         % window.
-        
-        timeLoop1b = tic;
-        
-        %GapsFiltered = zeros( NumBeats, 1 );
-        GapsFiltered = parallel.gpu.GPUArray.zeros(NumBeats);
+		
+		timeGapsFiltered = tic;
+        GapsFiltered = zeros( NumBeats, 1 );
+		disp(sprintf('timeGapsFiltered    = %f', toc(timeGapsFiltered)))
+		
+		timeGapsFiltered_g2 = tic;
+        GapsFiltered_g2 = gpuArray(GapsFiltered);
+		disp(sprintf('timeGapsFiltered_g2 = %f', toc(timeGapsFiltered_g2)))
+		
+		timeGapsFiltered_g = tic;
+        GapsFiltered_g = parallel.gpu.GPUArray.zeros(NumBeats, 1, 'double');
+		disp(sprintf('timeGapsFiltered_g  = %f', toc(timeGapsFiltered_g)))
+		
+		timeAssignment = tic;
+		Area = 0;
+		ct1 = 1;
+		Pos = ct1;
+		disp(sprintf('timeAssignment   = %f', toc(timeAssignment)))
+		
+		timeAssignment_g = tic;
+		Area_g = parallel.gpu.GPUArray.zeros(1, 1, 'double');
+		ct1_g = parallel.gpu.GPUArray.ones(1, 1, 'double');
+		Pos_g = ct1_g;
+		disp(sprintf('timeAssignment_g = %f', toc(timeAssignment_g)))
+		
+		timeLookups = tic;
+		Centre = SortedGaps( ct1 );
+		PosVal = SortedGaps( Pos );
+		xPos = SortedIndex( Pos );
+		StrengthVal = BeatStrengths( Centre );
+		GapWindowVal = GapWindow( PosVal );
+		disp(sprintf('timeLookups    = %f', toc(timeLookups)))
+		
+		timeLookups_g2 = tic;
+		Centre_g2 = SortedGaps_g( ct1 );
+		PosVal_g2 = SortedGaps_g( Pos );
+		xPos_g2 = SortedIndex_g( Pos );
+		StrengthVal_g2 = BeatStrengths_g( Centre_g2 );
+		GapWindowVal_g2 = GapWindow_g( PosVal_g2 );
+		disp(sprintf('timeLookups_g2 = %f', toc(timeLookups_g2)))
+		
+		timeLookups_g = tic;
+		Centre_g = SortedGaps_g( ct1_g );
+		PosVal_g = SortedGaps_g( Pos_g );
+		xPos_g = SortedIndex_g( Pos_g );
+		StrengthVal_g = BeatStrengths_g( Centre_g );
+		GapWindowVal_g = GapWindow_g( PosVal_g );
+		disp(sprintf('timeLookups_g  = %f', toc(timeLookups_g)))
+		
+		timeComparison = tic;
+		whileCheck = PosVal > Centre - HalfGapWindowSize;
+		ifCheck1 = Pos <= 1;
+		ifCheck2 = xPos > size( Beats,1 );
+		disp(sprintf('timeComparison    = %f', toc(timeComparison)))
+		
+		timeComparison_g2 = tic;
+		whileCheck_g2 = PosVal_g > Centre_g - HalfGapWindowSize;
+		ifCheck1_g2 = Pos_g <= 1;
+		ifCheck2_g2 = xPos_g > size( Beats,1 );
+		disp(sprintf('timeComparison_g2 = %f', toc(timeComparison_g2)))
+		
+		timeComparison_g = tic;
+		whileCheck_g = PosVal_g > Centre_g - HalfGapWindowSize_g;
+		ifCheck1_g2 = Pos_g <= One_g;
+		ifCheck2_g2 = xPos_g > BeatsSize_g;
+		disp(sprintf('timeComparison_g  = %f', toc(timeComparison_g)))
+		
+		timeCalculations = tic;
+		xPos = xPos - size( Beats,1 );
+		GapWindowIndex = PosVal - (Centre - HalfGapWindowSize);
+		Area = Area + ( StrengthVal * GapWindowVal );
+        Pos = Pos - 1;
+		disp(sprintf('timeCalculations   = %f', toc(timeCalculations)))
+		
+		timeCalculations_g = tic;
+		xPos_g = xPos_g - BeatsSize_g;
+		GapWindowIndex_g = PosVal_g - (Centre_g - HalfGapWindowSize_g);
+		Area_g = Area_g + ( StrengthVal_g * GapWindowVal_g );
+        Pos_g = Pos_g - One_g;
+		disp(sprintf('timeCalculations_g = %f', toc(timeCalculations_g)))
+		
+		timeAssignBack = tic;
+		GapsFiltered( ct1 ) = Area;
+		disp(sprintf('timeAssignBack   = %f', toc(timeAssignBack)))
+		
+		timeAssignBack_g = tic;
+		GapsFiltered_g( ct1_g ) = Area_g;
+		disp(sprintf('timeAssignBack_g = %f', toc(timeAssignBack_g)))
+		
+		pause
+		
         for ct1 = 1 : NumBeats
             Area = 0;
-            %class(Area)
 
             Centre = SortedGaps( ct1 );
-            
-			%class(Centre)
+
             Pos = ct1;
             PosVal = SortedGaps( Pos );
-            
-            %class(Pos)
-            %class(PosVal)
-            
             while ( PosVal > Centre - HalfGapWindowSize )
 
                 if Pos <= 1 
                     break;
                 end
-                
                 xPos = SortedIndex( Pos );
-				%class(xPos)
                 if ( xPos > size( Beats,1 ) ) 
                     xPos = xPos - size( Beats,1 );
                 end
                 Area = Area + ( BeatStrengths( xPos ) * GapWindow( PosVal - (Centre - HalfGapWindowSize) ) );
-                %class(Area)
                 Pos = Pos - 1;
                 PosVal = SortedGaps( Pos );
-                %class(PosVal)
             end
-            
+
             Pos = ct1;
             PosVal = SortedGaps( Pos );
             while ( PosVal <= Centre + HalfGapWindowSize )
@@ -1309,22 +1390,18 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
                 Pos = Pos + 1;
                 PosVal = SortedGaps( Pos );
             end
+
             GapsFiltered( ct1 ) = Area;
+
         end
-        
-        disp(sprintf('timeLoop1b = %f',toc(timeLoop1b)))
-        
-        %class(GapsFiltered)
+
 
         % Here we work out how much evidence there is to support each gap
         % by the GapFiltered value for each gap and a portion of the
         % GapFiltered value from offbeats.
 
         % Need to take care of end cases better
-        
-        timeLoop1c = tic;
-        
-        GapsConfidence = gpuArray(zeros( NumBeats, 1 ));
+        GapsConfidence = zeros( NumBeats, 1 );
         for ct1 = 1 : NumBeats -1 
 
             OffbeatPos = SortedGaps( ct1 ) + round(i / 2);
@@ -1349,57 +1426,21 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
             GapsConfidence( ct1 ) = GapsFiltered( ct1 ) + ( OffBeatValue * 0.5 );        
         end
 
-        disp(sprintf('timeLoop1c = %f',toc(timeLoop1c)))
-        
-        timeLoop1d = tic;
-        
         GapPeaks = SortedGaps( find( GapsConfidence == max( GapsConfidence ) ) );
-		%class(GapPeaks)
 
         %IntervalFitness( (i + 1) - MinimumInterval ) = max( GapsConfidence );
         %IntervalGap( (i+1) - MinimumInterval )       = GapPeaks( 1 );
         IntervalFitnessP(k) = max(GapsConfidence);
         IntervalGapP(k) = GapPeaks(1);
-		
-        disp(sprintf('timeLoop1d = %f',toc(timeLoop1d)))
-		%{
-		displog( ImportantMsg, LFN, sprintf( ...
-			'>>> Beats = len(%f), HalfGapWindowSize = %f, GapWindow = len(%f), NumBeats = %f, BeatStrengths = len(%f), IntervalFrequency = %f, MinimumInterval = %f', ...
-			length(Beats), ...
-			HalfGapWindowSize, ...
-			length(GapWindow), ...
-			NumBeats, ...
-			length(BeatStrengths), ...
-			IntervalFrequency, ...
-			MinimumInterval ...
-			));
-		displog( ImportantMsg, LFN, sprintf( ...
-			'>>> kMax = %f, Gaps = len(%f), FullGaps = len(%f), SortedGaps = len(%f), SortedIndex = len(%f)', ...
-			kMax, ...
-			length(Gaps), ...
-			length(FullGaps), ...
-			length(SortedGaps), ...
-			length(SortedIndex) ...
-			));
-		displog( ImportantMsg, LFN, sprintf( ...
-			'>>> GapsFiltered = len(%f), GapsConfidence = len(%f), GapPeaks = len(%f)', ...
-			length(GapsFiltered), ...
-			length(GapsConfidence), ...
-			length(GapPeaks) ...
-			));
-		%}
-        disp(sprintf('timeLoop1 = %f',toc(timeLoop1)))
     end
     displog( ImportantMsg, LFN, sprintf( '>>> timeTest = %f', toc(timeTest) ) );
     
     % Copy data from parallel-safe matrix to actual matrix
     timeTestCopy = tic;
-	IntervalFitnessG = gather(IntervalFitnessP);
-	IntervalGapG = gather(IntervalGapP);
     for k = 1:kMax
         i = (k - 1) * IntervalFrequency + 1;
-        IntervalFitness(i) = IntervalFitnessG(k);
-        IntervalGap(i) = IntervalGapG(k);
+        IntervalFitness(i) = IntervalFitnessP(k);
+        IntervalGap(i) = IntervalGapP(k);
     end
     
     timeTestTop = tic;
@@ -1432,7 +1473,7 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
     
     %for i = MinimumInterval : MaximumInterval
     kMax = length(MinimumInterval : MaximumInterval);
-    for k = 1:kMax
+    parfor k = 1:kMax
         %curDone = 100 * (i-MinimumInterval) / checkIntervalRange;
         %if ( curDone > doneLevel )
         %    displog( ProgressMsg, LFN, sprintf( '  Fitness testing: %3.0f%% done', curDone ));
