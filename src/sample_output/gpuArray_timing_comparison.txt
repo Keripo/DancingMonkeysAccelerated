@@ -1,0 +1,49 @@
+BPM loop
+> = with gpuArray
+< = without (original)
+
+	kMax = length(find(MinimumInterval : IntervalFrequency : MaximumInterval));
+	for k = 1:kMax
+		>timeLoop1
+		
+		>timeLoop1a
+		Gaps = 
+		...
+		>timeLoop1a = 0.003018
+		>timeLoop1a = 0.002188
+		<timeLoop1a = 0.000093
+		<timeLoop1a = 0.000086
+		
+		>timeLoop1b
+		GapsFiltered = 
+		for ct1 = 1 : NumBeats
+		...
+		>timeLoop1b = 79.591520
+		>timeLoop1b = 82.058784
+		<timeLoop1b = 0.033666
+		<timeLoop1b = 0.033464
+		
+		>timeLoop1c
+		GapsConfidence = 
+		for ct1 = 1 : NumBeats -1
+		...
+		>timeLoop1c = 39.275079
+		>timeLoop1c = 41.005919
+		<timeLoop1c = 0.059211
+		<timeLoop1c = 0.059155
+		
+		>timeLoop1d
+		GapPeaks = 
+		...
+		>timeLoop1d = 0.001567
+		>timeLoop1d = 0.001634
+		<timeLoop1d = 0.000040
+		<timeLoop1d = 0.000036
+		
+		>timeLoop1 = 118.874333
+		>timeLoop1 = 123.068969
+		<timeLoop1 = 0.093485
+		<timeLoop1 = 0.093174
+	
+		
+		

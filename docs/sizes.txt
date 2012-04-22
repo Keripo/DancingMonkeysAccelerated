@@ -1,0 +1,18 @@
+General:
+Beats = len(330)
+HalfGapWindowSize = 1000
+GapWindow = len(2000)
+NumBeats = 660
+BeatStrengths = len(330)
+IntervalFrequency = 10
+MinimumInterval = 12907
+
+Test Loop Pass #1:
+kMax = 1683
+Gaps = len(330)
+FullGaps = len(660)
+SortedGaps = len(660)
+SortedIndex = len(660)
+GapsFiltered = len(660)
+GapsConfidence = len(660)
+GapPeaks = len(1)
