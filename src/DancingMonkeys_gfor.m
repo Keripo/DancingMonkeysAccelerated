@@ -3,7 +3,7 @@
 %   modified by Eric Haines, version 1.02 on, 2006
 %   modified by Philip Peng to include timing info, 2012
 
-function DancingMonkeys( varargin )
+function DancingMonkeys_gfor( varargin )
 
 % Difficulty levels must be given as strings and not integers
 
@@ -1255,7 +1255,7 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
     for k = 1:kMax
     %for i = MinimumInterval : IntervalFrequency : MaximumInterval
         
-		timeLoop0 = tic;
+		%timeLoop0 = tic;
 		
 		i = (k - 1) * IntervalFrequency + MinimumInterval;
 		
@@ -1285,9 +1285,9 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
 		SortedIndex_g = gdouble(SortedIndex);
 		%%}
 		
-		displog( ImportantMsg, LFN, sprintf( '>>> timeLoop0 = %f', toc(timeLoop0) ) );
+		%displog( ImportantMsg, LFN, sprintf( '>>> timeLoop0 = %f', toc(timeLoop0) ) );
 		
-		timeLoop1 = tic;
+		%timeLoop1 = tic;
 		
         %for n = 1 : NumBeats
 		gfor n = 1 : NumBeats
@@ -1323,9 +1323,9 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
 		%GapsFiltered = GapsFiltered_g;
 		%GapsFiltered = double(GapsFiltered_g);
 		
-		displog( ImportantMsg, LFN, sprintf( '>>> timeLoop1 = %f', toc(timeLoop1) ) );
+		%displog( ImportantMsg, LFN, sprintf( '>>> timeLoop1 = %f', toc(timeLoop1) ) );
 		
-		timeLoop2 = tic;
+		%timeLoop2 = tic;
 
         % Here we work out how much evidence there is to support each gap
         % by the GapFiltered value for each gap and a portion of the
@@ -1364,9 +1364,9 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
         %end
 		gend
 		
-		displog( ImportantMsg, LFN, sprintf( '>>> timeLoop2 = %f', toc(timeLoop2) ) );
+		%displog( ImportantMsg, LFN, sprintf( '>>> timeLoop2 = %f', toc(timeLoop2) ) );
 		
-		timeLoop3 = tic;
+		%timeLoop3 = tic;
 
         GapPeaks = SortedGaps_g( find( GapsConfidence_g == max( GapsConfidence_g ) ) );
 
@@ -1375,7 +1375,7 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
         IntervalFitnessP(k) = max(GapsConfidence_g);
         IntervalGapP(k) = GapPeaks(1);
 		
-		displog( ImportantMsg, LFN, sprintf( '>>> timeLoop3 = %f', toc(timeLoop3) ) );
+		%displog( ImportantMsg, LFN, sprintf( '>>> timeLoop3 = %f', toc(timeLoop3) ) );
     end
     displog( ImportantMsg, LFN, sprintf( '>>> timeTest = %f', toc(timeTest) ) );
     

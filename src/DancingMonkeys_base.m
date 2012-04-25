@@ -3,7 +3,7 @@
 %   modified by Eric Haines, version 1.02 on, 2006
 %   modified by Philip Peng to include timing info, 2012
 
-function DancingMonkeys( varargin )
+function DancingMonkeys_base( varargin )
 
 % Difficulty levels must be given as strings and not integers
 
