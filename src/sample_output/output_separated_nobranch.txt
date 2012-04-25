@@ -1,0 +1,56 @@
+Initialized.
+>>> timeArgs = 0.004648
+----------------------------------------------------------------
+Begin processing input file ..\input\smooooch.mp3
+MP3 Title found: smooooch・∀・
+MP3 Primary Artist found: kors k
+>>> timeInfo = 7.359936
+Song file successfully read.
+Normalized song.
+Monoed song.
+Smoothed song.
+Normalised mono and smoothed data.
+>>> timeData = 1.638921
+Thresholded data.
+Found peaks and troughs.
+Found beat positions.
+Calculated peak to beat offset.
+>>> timePeaks = 0.261591
+>>> timePrep = 9.260895 (timeInfo + timeData + timePeaks)
+Normal BPM test: 89.000000 to 205.000000
+>>> timeConvert = 0.008832
+>>> timeSort = 0.099330
+>>> timeFilter = 1.896257
+>>> timeConfidence = 2.065682
+>>> timeMax = 0.013256
+>>> timeTest = 4.084290
+>>> timeTestTop = 0.000407
+Check fitness of BPMs.
+>>> timeFit = 48.794074
+Brute forced the interval tests.
+>>> timeFitBest = 0.001948
+>>> timeBpm = 52.881482 (timeTest + timeTestTop + timeFit + timeFitBest)
+Refined BPM test: best previous was 177.001806, searching 176.942624 to 177.061028
+>>> timeConvert = 0.003227
+>>> timeSort = 0.000774
+>>> timeFilter = 0.032789
+>>> timeConfidence = 0.013455
+>>> timeMax = 0.000121
+>>> timeTest = 0.051112
+>>> timeTestTop = 0.000041
+Check fitness of BPMs.
+>>> timeFit = 0.000038
+Brute forced the interval tests.
+>>> timeFitBest = 0.001106
+>>> timeBpm = 0.052506 (timeTest + timeTestTop + timeFit + timeFitBest)
+Calculated Energy.
+>>> timeEnergy = 0.027819
+Computed Self Similarity.
+Calculated Bar Similarity.
+Calculated BPM: 176.942624
+           Gap in seconds: 0.602245
+           Confidence: 34.095395 (minimum is 10.000000)
+>>> timeSimilar = 1.124912
+>>> timeGap = 1.153334 (timeEnergy + timeSmilar)
+>>> timeProgram = 63.353427 (timeSong + timeArgs)
+>> 
