@@ -1257,8 +1257,7 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
             PosVal = SortedGaps_g(Pos,k);
             while ( PosVal > Centre - HalfGapWindowSize_g ) & (Pos > 1)
                 xPos = SortedIndex_g(Pos, k);
-                SizeCheck = xPos > SizeBeats_g;
-                xPos = xPos - SizeCheck * SizeBeats_g;
+                xPos = xPos - (xPos > SizeBeats_g) * SizeBeats_g;
                 Area = Area + ( BeatStrengths_g( xPos ) * GapWindow_g( PosVal - (Centre - HalfGapWindowSize_g) ) );
                 Pos = Pos - 1;
                 PosVal = SortedGaps_g(Pos, k);
@@ -1268,8 +1267,7 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
             PosVal = SortedGaps_g(Pos, k);
             while ( PosVal <= Centre + HalfGapWindowSize_g ) & (Pos < NumBeats_g)
                 xPos = SortedIndex_g(Pos, k);
-                SizeCheck = xPos > SizeBeats_g;
-                xPos = xPos - SizeCheck * SizeBeats_g;
+                xPos = xPos - (xPos > SizeBeats_g) * SizeBeats_g;
                 Area = Area + ( BeatStrengths_g( xPos ) * GapWindow_g( PosVal - (Centre - HalfGapWindowSize_g) ) );
                 Pos = Pos + 1;
                 PosVal = SortedGaps_g(Pos, k);
@@ -1383,15 +1381,9 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
 
                 Pos = ct1;
                 PosVal = SortedGaps( Pos );
-                while ( PosVal > Centre - HalfGapWindowSize )
-
-                    if Pos <= 1 
-                        break;
-                    end
+                while ( PosVal > Centre - HalfGapWindowSize ) & (Pos > 1)
                     xPos = SortedIndex( Pos );
-                    if ( xPos > size( Beats,1 ) ) 
-                        xPos = xPos - size( Beats,1 );
-                    end
+                    xPos = xPos - (xPos > SizeBeats_g) * SizeBeats_g;
                     Area = Area + ( BeatStrengths( xPos ) * GapWindow( PosVal - (Centre - HalfGapWindowSize) ) );
                     Pos = Pos - 1;
                     PosVal = SortedGaps( Pos );
@@ -1399,15 +1391,9 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
 
                 Pos = ct1;
                 PosVal = SortedGaps( Pos );
-                while ( PosVal <= Centre + HalfGapWindowSize )
-
-                    if Pos >= NumBeats
-                        break;
-                    end
+                while ( PosVal <= Centre + HalfGapWindowSize ) & (Pos < NumBeats)
                     xPos = SortedIndex( Pos );
-                    if ( xPos > size( Beats,1 ) ) 
-                        xPos = xPos - size( Beats,1 );
-                    end
+                    xPos = xPos - (xPos > SizeBeats_g) * SizeBeats_g;
                     Area = Area + ( BeatStrengths( xPos ) * GapWindow( PosVal - (Centre - HalfGapWindowSize) ) );
                     Pos = Pos + 1;
                     PosVal = SortedGaps( Pos );
@@ -1432,10 +1418,7 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
                 % we need to work out its index in the SortedGaps array
                 Pos = ct1;
                 PosVal = SortedGaps( Pos );
-                while ( PosVal < OffbeatPos )
-                    if Pos >= NumBeats - 1
-                        break;
-                    end
+                while ( PosVal < OffbeatPos ) & (Pos < NumBeats - 1)
                     Pos = Pos + 1;
                     PosVal = SortedGaps( Pos );
                 end
