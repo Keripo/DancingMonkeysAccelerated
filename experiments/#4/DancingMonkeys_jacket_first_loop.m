@@ -1367,7 +1367,9 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
     
     %for i = MinimumInterval : MaximumInterval
     kMax = length(MinimumInterval : MaximumInterval);
-    parfor k = 1:kMax
+    gfor k = 1:kMax
+        gGapWindow = local(k,GapWindow);
+        gBeatStrengths = local(k,BeatStrengths);
         %curDone = 100 * (i-MinimumInterval) / checkIntervalRange;
         %if ( curDone > doneLevel )
         %    displog( ProgressMsg, LFN, sprintf( '  Fitness testing: %3.0f%% done', curDone ));
@@ -1384,7 +1386,7 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
             FullGaps = FullGaps(:);
             [ SortedGaps SortedIndex ] = sort( FullGaps );
 
-            GapsFiltered = zeros( NumBeats, 1 );
+            GapsFiltered = gzeros( NumBeats, 1 );
             for ct1 = 1 : NumBeats
                 Area = 0;
 
@@ -1432,7 +1434,7 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
             % GapFiltered value from offbeats.
 
             % Need to take care of end cases better
-            GapsConfidence = zeros( NumBeats, 1 );
+            GapsConfidence = gzeros( NumBeats, 1 );
             for ct1 = 1 : NumBeats -1 
 
                 OffbeatPos = SortedGaps( ct1 ) + round(i / 2);
@@ -1457,14 +1459,15 @@ while ( TestNormalBPM ~= 0 || TestRefinedBPM ~= 0 )
                 GapsConfidence( ct1 ) = GapsFiltered( ct1 ) + ( OffBeatValue * 0.5 );        
             end
 
-            GapPeaks = SortedGaps( find( GapsConfidence == max( GapsConfidence ) ) );
-
+            %GapPeaks = SortedGaps( find( GapsConfidence == max( GapsConfidence ) ) );
+              mask = GapsConfidence == max( GapsConfidence );
+             GapPeaks = mask .* SortedGaps;
           
             IntervalFitness(k) = max(GapsConfidence);
             IntervalGap(k) = GapPeaks(1);
 
         end
-    end
+    gend
     
     
     
